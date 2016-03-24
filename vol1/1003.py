@@ -1,17 +1,3 @@
-def large_one(a, b):
-    if a > b:
-        return a
-    elif a< b:
-        return b
-
-
-def small_one(a, b):
-    if a < b:
-        return a
-    elif a > b:
-        return b;
-
-
 while True:
     try:
         scores = []
@@ -19,8 +5,8 @@ while True:
         scores = line.split()
         if len(scores) != 2:
             break
-        high_score = large_one(int(scores[0]), int(scores[1]))
-        low_score = small_one(int(scores[0]), int(scores[1]))
+        high_score = max(map(int, scores))
+        low_score = min(map(int, scores))
         print high_score
         print low_score
     except EOFError:
