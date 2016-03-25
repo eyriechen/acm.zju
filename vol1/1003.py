@@ -45,13 +45,19 @@ def cal_factors(num):
             factors_list.append(f)
     return factors_list;
 
-print cal_factors(343)
-print cal_factors(49)
-print
-print cal_factors(3599)
-print cal_factors(610)
-print
-print cal_factors(62)
-print cal_factors(36)
-print
-
+while True:
+    try:
+        scores = []
+        line = raw_input()
+        scores = line.split()
+        if len(scores) != 2:
+            break
+        high_score = max(map(int, scores))
+        low_score = min(map(int, scores))
+        low_factors = cal_factors(low_score)
+        if len(low_factors) == 0:
+            print high_score
+            continue
+        high_factors = cal_factors(high_score)
+    except EOFError:
+        exit(0)
