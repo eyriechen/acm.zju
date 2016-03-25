@@ -26,6 +26,10 @@ def break_factor(num, start, factors):
 
 
 def cal_factors(num):
+    if num == 2:
+        return [[2]]
+    if num == 1:
+        return [[1]]
     factors_list = []
     i = 2
     while i < 101:
@@ -44,6 +48,7 @@ def every_one_contains(l, num):
             return False
     else:
         return True
+
 
 def validte(high, lows):
     for i in high:
