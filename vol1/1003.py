@@ -68,6 +68,7 @@ while True:
         high_factors = cal_factors(high_score)
         if len(high_factors) == 0:
             print  low_score
+            continue
         valid_high_factors = []
         for f in high_factors:
             if validte(f, low_factors):
