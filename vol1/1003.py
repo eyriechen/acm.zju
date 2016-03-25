@@ -1,11 +1,3 @@
-def validate(score):
-    if score <= 100:
-        return True
-    if len(cal_factors(score)) == 0:
-        return False
-    return True
-
-
 def add_factor(l, num):
     if num > 100:
         return []
@@ -45,13 +37,28 @@ def cal_factors(num):
             factors_list.append(f)
     return factors_list;
 
+
+def every_one_contains(l, num):
+    for e in l:
+        if not num in e:
+            return False
+    else:
+        return True
+
+def validte(high, lows):
+    for i in high:
+        if every_one_contains(lows, i):
+            return False
+    else:
+        return True
+
 while True:
     try:
         scores = []
         line = raw_input()
         scores = line.split()
         if len(scores) != 2:
-            break
+            continue
         high_score = max(map(int, scores))
         low_score = min(map(int, scores))
         low_factors = cal_factors(low_score)
@@ -59,5 +66,15 @@ while True:
             print high_score
             continue
         high_factors = cal_factors(high_score)
+        if len(high_factors) == 0:
+            print  low_score
+        valid_high_factors = []
+        for f in high_factors:
+            if validte(f, low_factors):
+                valid_high_factors.append(f);
+        if len(valid_high_factors) == 0:
+            print low_score
+        else:
+            print high_score
     except EOFError:
         exit(0)
