@@ -5,7 +5,7 @@ def add_factor(l, num):
 
 
 def break_factor(num, start, factors):
-    if start >= num:
+    if start > num:
         return []
     for i in range(start, 101):
         if num % i == 0:
