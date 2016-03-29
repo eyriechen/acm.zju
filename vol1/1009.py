@@ -1,108 +1,105 @@
-class Enigma:
+class Rotor:
+    length = 0
     codes = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    encrypt_code = []
+    decrypt_code = []
+
+    def __init__(self, length, str):
+        self.length = length
+        self.codes = self.codes[:length]
+        self.encrypt_code = []
+        self.decrypt_code = []
+        original_rotor = []
+        for c in self.codes:
+            original_rotor.append(self.codes.index(c))
+        encrypt_codes = []
+        decrypt_codes = []
+        for letter in str:
+            encrypt_codes.append(self.codes.index(letter))
+            decrypt_codes.append(self.codes.index(letter))
+
+        for j in range(0, self.length):
+            self.encrypt_code.append((encrypt_codes[j] - original_rotor[j]) % length)
+
+        current_rotor = []
+        for j in range(0, self.length):
+            current_rotor.append(0)
+
+        for j in range(0,self.length):
+            c = self.codes.index(str[j])
+            current_rotor[c] = (original_rotor[j] - c) % length
+
+        self.decrypt_code = current_rotor
+
+    def rotate(self):
+        code = self.encrypt_code.pop()
+        code2 = self.decrypt_code.pop()
+        self.encrypt_code.insert(0,code)
+        self.decrypt_code.insert(0,code2)
+
+    def encrypt(self, c):
+        i = self.codes.index(c)
+        i += self.encrypt_code[i]
+        i %= self.length
+        return self.codes[i]
+
+    def decrypt(self, c):
+        i = self.codes.index(c)
+        i += self.decrypt_code[i]
+        i %= self.length
+        return self.codes[i]
+
+
+class Enigma:
     position = 0
     length = 0
-    en_rotors = []
-    de_rotors = []
-    rotors_str = []
+    rotors = []
 
     def __init__(self, length, str):
         self.position = 0
         self.length = length
-        self.codes = self.codes[:length]
-        self.en_rotors_str = str
-        self.de_rotors = []
-        rotor_codes = []
-        self.en_rotors = []
-        original_rotor = []
+        self.rotors = []
 
-        for c in self.codes:
-            original_rotor.append(self.codes.index(c))
-
-        for r in self.en_rotors_str:
-            current_rotor = []
-            for letter in r:
-                current_rotor.append(self.codes.index(letter))
-            rotor_codes.append(current_rotor)
-
-        for i in range(0,3):
-            current_rotor = []
-            for j in range(0, self.length):
-                current_rotor.append((rotor_codes[i][j] - original_rotor[j]) % length)
-            self.en_rotors.append(current_rotor)
-
-        for i in range(0,3):
-            current_rotor = []
-            for j in range(0, self.length):
-                current_rotor.append(0)
-            for j in range(0, self.length):
-                c = rotor_codes[i].index(j)
-                current_rotor[j] = (c - original_rotor.index(j)) % length
-            self.de_rotors.append(current_rotor)
-
-    def show(self):
-        print self.codes
-        print self.en_rotors_str
-        print self.en_rotors
-        print self.de_rotors
-
-    def encrypt(self, plain_text):
-        plain_code = []
-        encrypted_code = []
-        encrypted_text = ''
-        for letter in plain_text:
-            plain_code.append(self.codes.index(letter))
-        for i in plain_code:
-            encrypted_code.append((i + self.en_rotors[0][i] + self.en_rotors[1][i] + self.en_rotors[2][i]) % self.length)
-            self.rotate()
-
-        for i in encrypted_code:
-            encrypted_text += self.codes[i]
-        return encrypted_text
-
-    def decrypt(self, encrypted_text):
-        plain_code = []
-        plain_text = ''
-        encrypted_code = []
-        for letter in encrypted_text:
-            encrypted_code.append(self.codes.index(letter))
-
-        for i in encrypted_code:
-            plain_code.append((i + self.de_rotors[0][i] + self.de_rotors[1][i] + self.de_rotors[2][i]) % self.length)
-            self.rotate()
-
-        for i in plain_code:
-            plain_text += self.codes[i]
-
-        return plain_text
+        for s in str:
+            self.rotors.append(Rotor(self.length, s))
 
     def rotate(self):
-        code = self.en_rotors[0].pop()
-        code2 = self.de_rotors[0].pop()
-        self.en_rotors[0].insert(0,code)
-        self.de_rotors[0].insert(0,code2)
         self.position += 1
-        for i in range(1,3):
+        for i in range(0, len(self.rotors)):
             if self.position % (self.length ** i) == 0:
-                code = self.en_rotors[i].pop()
-                code2 = self.de_rotors[i].pop()
-                self.en_rotors[i].insert(0,code)
-                self.de_rotors[i].insert(0,code)
+                self.rotors[i].rotate()
 
-        if self.position % (self.length ** 3) == 0:
+        if self.position % (self.length ** len(self.rotors)) == 0:
             self.position = 0
 
-    def reverse_rotate(self):
-        for i in range(0, 3):
-            if self.position % (self.length ** i) == 0:
-                code = self.en_rotors[i].popleft()
-                self.en_rotors[i].append(code)
+    def encrypt(self, str):
+        plain_text = ''
+        for c in str:
+            code = c
+            for r in self.rotors:
+                code = r.encrypt(code)
+            plain_text += code
+            self.rotate()
+        return plain_text
 
-        if self.position == 0:
-            self.position = self.length ** 3 - 1;
-        self.position -= 1
+    def decrypt(self, str):
+        secret_text = ''
+        for c in str:
+            code = c
+            for r in reversed(self.rotors):
+                code = r.decrypt(code)
+            secret_text += code
+            self.rotate()
+        return secret_text
 
-e_num=1
+    def show(self):
+        pass
+
+
+
+
+
+e_num=0
 while True:
     try:
         s = raw_input()
@@ -114,13 +111,15 @@ while True:
         str2 = raw_input()
         s = raw_input()
         num = int(s)
+        e_num += 1
+        if e_num != 1:
+            print
         print 'Enigma ' + str(e_num) + ':'
         for i in range(0,num):
             e = Enigma(l,[str0, str1, str2])
             cryptographs = raw_input()
             print e.decrypt(cryptographs).lower()
 
-        print
 
     except EOFError:
         exit(0)
