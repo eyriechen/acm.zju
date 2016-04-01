@@ -10,6 +10,14 @@ for i in range(0, len(search)):
 
 line = raw_input()
 
+
+def cal_score(search_str, document):
+    score = 0.0
+    for term in list(set(search_str)):
+        score += (document.count(term) * search_str.count(term)) ** 0.5
+    return score
+
+
 while True:
     document = []
     while True:
@@ -21,9 +29,4 @@ while True:
             t[i] = t[i].translate(all, nodigs_or_letter)
             document.append(t[i])
     print document
-    score = 0
-    for s in list(set(search)):
-        score += (document.count(s) * search.count(s)) ** 0.5
-
-    print "%.2f" % (score)
-
+    print "%.2f" % cal_score(search, document)
